@@ -213,6 +213,8 @@ void setup()
 			JsonDoc_["rssi"] = WiFi.RSSI();
 			String payload;
 			serializeJson(JsonDoc_, payload);
+			Serial.print("Payload=");
+			Serial.println(payload);
 
 			////////////////////////////////////////
 			// Publish to MQTT server
