@@ -1,8 +1,8 @@
 [Japanese]
 
-# Ping
+# PingClient
 
-Pingは、一定時間間隔にサーバー[www.google.com](https://www.google.com/)にPingしてネットワークの開通状況を確認するサンプルコードです。
+PingClientは、一定時間間隔にサーバー[www.google.com](https://www.google.com/)にPingしてネットワークの開通状況を確認するサンプルコードです。
 
 ```mermaid
 flowchart LR

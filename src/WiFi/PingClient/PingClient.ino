@@ -1,5 +1,5 @@
 /*
- * Ping.ino
+ * PingClient.ino
  * Copyright (C) 2022 Takashi Matsuoka <matsujirushi@live.jp>
  * MIT License
  */
