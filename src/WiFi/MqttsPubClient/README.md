@@ -59,6 +59,7 @@ sequenceDiagram
     end
 
     note right of main: Sync clock with SNTP server
+    main->>TIME: configTime()
     loop >= TIME_VALID_THRESHOLD
         main->>TIME: time()
     end
@@ -82,4 +83,4 @@ sequenceDiagram
 
 ## ライセンス
 
-[MIT]()
+[MIT](LICENSE.txt)

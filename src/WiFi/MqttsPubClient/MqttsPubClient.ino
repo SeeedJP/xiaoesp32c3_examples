@@ -46,13 +46,13 @@ static constexpr unsigned long INTERVAL = 60000;										// [msec.]
 
 static const char WIFI_SSID[] = "";
 static const char WIFI_PASSPHRASE[] = "";
-static constexpr uint32_t WIFI_CONNECT_TIMEOUT = 5000;							// [msec.]
+static constexpr uint32_t WIFI_CONNECT_TIMEOUT = 30000;							// [msec.]
 
 static constexpr time_t TIME_VALID_THRESHOLD = 365 * 24 * 60 * 60;	// [sec.]
 static constexpr long GMT_OFFSET = 9 * 60 * 60;											// =JST
 static constexpr int DAYLIGHT_OFFSET = 0;														// =JST
 static const char SNTP_SERVER[] = "pool.ntp.org";
-static constexpr unsigned long SYNC_CLOCK_TIMEOUT = 5000;						// [msec.]
+static constexpr unsigned long SYNC_CLOCK_TIMEOUT = 30000;					// [msec.]
 
 static const char MQTT_SERVER[] = "test.mosquitto.org";
 static constexpr uint16_t MQTT_SERVER_PORT = 8883;
@@ -114,9 +114,6 @@ void setup()
 	////////////////////////////////////////
 	// Configure
 
-	Serial.println("SNTP: Configure.");
-	configTime(GMT_OFFSET, DAYLIGHT_OFFSET, SNTP_SERVER);
-
 	Serial.println("TCP: Configure.");
 	TcpClient_.setCACert(MOSQUITTO_ORG_CA_CERT);
 
@@ -167,10 +164,12 @@ void setup()
 		////////////////////////////////////////
 		// Sync clock with SNTP server
 
+		// TODO This code does not re-sync
 		bool synced = time(nullptr) >= TIME_VALID_THRESHOLD;
 		if (!synced)
 		{
 			Serial.print("SNTP: Syncing clock...");
+			configTime(GMT_OFFSET, DAYLIGHT_OFFSET, SNTP_SERVER);
 
 			elapsedMillis syncElapsed;
 			while (syncElapsed < SYNC_CLOCK_TIMEOUT)
