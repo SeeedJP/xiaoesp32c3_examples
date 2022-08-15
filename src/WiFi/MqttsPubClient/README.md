@@ -60,9 +60,7 @@ sequenceDiagram
 
     note right of main: Sync clock with SNTP server
     main->>TIME: configTime()
-    loop >= TIME_VALID_THRESHOLD
-        main->>TIME: time()
-    end
+    TIME-->>main: Sync completed
 
     note right of main: Create JSON string
     main->>StaticJsonDocument: Create JSON string

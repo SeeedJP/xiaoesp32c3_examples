@@ -28,6 +28,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Includes
 
+#include <atomic>
+#include <esp_sntp.h>
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h>
@@ -59,6 +61,8 @@ static constexpr uint16_t MQTT_SERVER_PORT = 8883;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Variables
+
+static RTC_DATA_ATTR time_t NextSyncTime_ = 0;
 
 static WiFiClientSecure TcpClient_;
 static PubSubClient MqttClient_(TcpClient_);
@@ -100,6 +104,19 @@ static const char MOSQUITTO_ORG_CA_CERT[] = \
 	"LdUdRudafMu5T5Xma182OC0/u/xRlEm+tvKGGmfFcN0piqVl8OrSPBgIlb+1IKJE\n" \
 	"m/XriWr/Cq4h/JfB7NTsezVslgkBaoU=\n" \
 	"-----END CERTIFICATE-----\n";
+
+////////////////////////////////////////////////////////////////////////////////
+// TimeSyncNotificationCallback
+
+static std::atomic_bool TimeSyncCompleted_;
+
+static void TimeSyncNotificationCallback(struct timeval* tv)
+{
+	if (sntp_get_sync_status() == SNTP_SYNC_STATUS_COMPLETED)
+	{
+		TimeSyncCompleted_ = true;
+	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // setup and loop
@@ -164,17 +181,18 @@ void setup()
 		////////////////////////////////////////
 		// Sync clock with SNTP server
 
-		// TODO This code does not re-sync
-		bool synced = time(nullptr) >= TIME_VALID_THRESHOLD;
+		bool synced = NextSyncTime_ != 0 && time(nullptr) < NextSyncTime_;
 		if (!synced)
 		{
 			Serial.print("SNTP: Syncing clock...");
+			sntp_set_time_sync_notification_cb(TimeSyncNotificationCallback);
+			TimeSyncCompleted_ = false;
 			configTime(GMT_OFFSET, DAYLIGHT_OFFSET, SNTP_SERVER);
 
 			elapsedMillis syncElapsed;
 			while (syncElapsed < SYNC_CLOCK_TIMEOUT)
 			{
-				if (time(nullptr) < TIME_VALID_THRESHOLD)
+				if (!TimeSyncCompleted_)
 				{
 					delay(SPIN_WAIT);
 					yield();
@@ -192,6 +210,7 @@ void setup()
 			else
 			{
 				Serial.println("Synced.");
+				NextSyncTime_ = time(nullptr) + SNTP_UPDATE_DELAY;
 			}
 		}
 
