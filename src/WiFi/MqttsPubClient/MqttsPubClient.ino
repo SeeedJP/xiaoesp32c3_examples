@@ -50,9 +50,7 @@ static const char WIFI_SSID[] = "";
 static const char WIFI_PASSPHRASE[] = "";
 static constexpr uint32_t WIFI_CONNECT_TIMEOUT = 30000;							// [msec.]
 
-static constexpr time_t TIME_VALID_THRESHOLD = 365 * 24 * 60 * 60;	// [sec.]
-static constexpr long GMT_OFFSET = 9 * 60 * 60;											// =JST
-static constexpr int DAYLIGHT_OFFSET = 0;														// =JST
+static const char TZ[] = "JST-9";
 static const char SNTP_SERVER[] = "pool.ntp.org";
 static constexpr unsigned long SYNC_CLOCK_TIMEOUT = 30000;					// [msec.]
 
@@ -187,7 +185,7 @@ void setup()
 			Serial.print("SNTP: Syncing clock...");
 			sntp_set_time_sync_notification_cb(TimeSyncNotificationCallback);
 			TimeSyncCompleted_ = false;
-			configTime(GMT_OFFSET, DAYLIGHT_OFFSET, SNTP_SERVER);
+			configTzTime(TZ, SNTP_SERVER);
 
 			elapsedMillis syncElapsed;
 			while (syncElapsed < SYNC_CLOCK_TIMEOUT)
@@ -212,6 +210,11 @@ void setup()
 				Serial.println("Synced.");
 				NextSyncTime_ = time(nullptr) + SNTP_UPDATE_DELAY;
 			}
+		}
+		else
+		{
+			setenv("TZ", TZ, 1);
+			tzset();
 		}
 
 		const time_t now = time(nullptr);
