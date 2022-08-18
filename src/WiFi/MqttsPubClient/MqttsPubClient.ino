@@ -44,7 +44,7 @@ static const char GROUP_NAME[] = "test";
 static const char DEVICE_NAME[] = "xiao1234";
 
 static constexpr unsigned long SPIN_WAIT = 1;												// [msec.]
-static constexpr unsigned long INTERVAL = 60000;										// [msec.]
+static constexpr unsigned long INTERVAL = 60;												// [sec.]
 
 static const char WIFI_SSID[] = "";
 static const char WIFI_PASSPHRASE[] = "";
@@ -60,6 +60,7 @@ static constexpr uint16_t MQTT_SERVER_PORT = 8883;
 ////////////////////////////////////////////////////////////////////////////////
 // Variables
 
+static RTC_DATA_ATTR time_t StartTime_ = 0;
 static RTC_DATA_ATTR time_t NextSyncTime_ = 0;
 
 static WiFiClientSecure TcpClient_;
@@ -227,6 +228,14 @@ void setup()
 		if (synced)
 		{
 			////////////////////////////////////////
+			// Remember start time
+
+			if (StartTime_ == 0)
+			{
+				StartTime_ = time(nullptr);
+			}
+
+			////////////////////////////////////////
 			// Create JSON string
 
 			JsonDoc_.clear();
@@ -279,7 +288,8 @@ void setup()
 
 	Serial.println("Transition to deep sleep.");
 //	delay(1000);
-	esp_sleep_enable_timer_wakeup(INTERVAL * 1000);
+	const int sleepSec = StartTime_ == 0 ? 0 : INTERVAL - (time(nullptr) - StartTime_) % INTERVAL;
+	esp_sleep_enable_timer_wakeup(sleepSec * 1000 * 1000);
 	esp_deep_sleep_start();
 }
 
