@@ -79,6 +79,26 @@ sequenceDiagram
     main->>ESP: esp_deep_sleep_start()
 ```
 
+## 消費電流
+
+| 処理 | 電気量[mC] | 電流[mA] | 時間[msec.] |
+| :--- | :--- | :--- | :--- |
+| MQTT通信 1回目（SNTPあり） | 269.46 | 37.66 | 7154 |
+| MQTT通信 2回目（SNTPなし） | 148.97 | 39.36 | 3785 |
+| ディープスリープ | 7.27 | 0.13 | 56770 |
+
+**全体（MQTT通信を2回）:**  
+<img src="media/1.png" width="600">
+
+**初回通信時（SNTP時刻同期あり）:**  
+<img src="media/2.png" width="600">
+
+**2回目通信時（SNTP時刻同期なし）:**  
+<img src="media/3.png" width="600">
+
+**ディープスリープ時:**  
+<img src="media/4.png" width="600">
+
 ## ライセンス
 
 [MIT](LICENSE.txt)
