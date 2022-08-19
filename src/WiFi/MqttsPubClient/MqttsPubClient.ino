@@ -225,7 +225,7 @@ void setup()
 		asctime_r(&nowTm, nowStr);
 		Serial.println(nowStr);
 
-		if (synced)
+		if (NextSyncTime_ != 0)
 		{
 			////////////////////////////////////////
 			// Remember start time
