@@ -67,7 +67,7 @@ static WiFiClientSecure TcpClient_;
 static PubSubClient MqttClient_(TcpClient_);
 
 static unsigned long ExecutionTime_ = 0;
-static StaticJsonDocument<128> JsonDoc_;
+static StaticJsonDocument<32> JsonDoc_;	// https://arduinojson.org/v6/assistant
 
 ////////////////////////////////////////////////////////////////////////////////
 // Certificates
@@ -239,7 +239,7 @@ void setup()
 			// Create JSON string
 
 			JsonDoc_.clear();
-			JsonDoc_["uptime"] = millis();
+			JsonDoc_["uptime"] = time(nullptr) - StartTime_;
 			JsonDoc_["rssi"] = WiFi.RSSI();
 			String payload;
 			serializeJson(JsonDoc_, payload);
