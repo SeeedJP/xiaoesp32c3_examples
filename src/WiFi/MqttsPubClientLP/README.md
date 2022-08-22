@@ -1,8 +1,8 @@
 [Japanese]
 
-# MqttsPubClient
+# MqttsPubClientLP
 
-MqttsPubClientは、一定時間間隔にMQTTサーバー[test.mosquitto.org](https://test.mosquitto.org/)にJSONメッセージをパブリッシュ（送信）するサンプルコードです。
+MqttsPubClientLPは、一定時間間隔にMQTTサーバー[test.mosquitto.org](https://test.mosquitto.org/)にJSONメッセージをパブリッシュ（送信）するサンプルコードです。
 
 ```mermaid
 flowchart LR
