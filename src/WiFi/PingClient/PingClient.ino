@@ -72,6 +72,7 @@ void loop()
 	// Check Wi-Fi connection status
 
 	const bool wifiStatus = WiFi.status() == WL_CONNECTED;
+	const int wifiRssi = WiFi.RSSI();
 
 	////////////////////////////////////////
 	// Execute ping
@@ -85,6 +86,8 @@ void loop()
 	Serial.print(count);
 	Serial.print('\t');
 	Serial.print(wifiStatus ? 1 : 0);
+	Serial.print('\t');
+	Serial.print(wifiRssi);
 	Serial.print('\t');
 	Serial.print(pingResult ? 1 : 0);
 	Serial.print('\t');
