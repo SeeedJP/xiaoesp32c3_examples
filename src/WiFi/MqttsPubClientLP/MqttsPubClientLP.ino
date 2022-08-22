@@ -127,6 +127,9 @@ void setup()
 	Serial.println();
 	Serial.println();
 
+	setenv("TZ", TZ, 1);
+	tzset();
+
 	////////////////////////////////////////
 	// Configure
 
@@ -186,7 +189,7 @@ void setup()
 			Serial.print("SNTP: Syncing clock...");
 			sntp_set_time_sync_notification_cb(TimeSyncNotificationCallback);
 			TimeSyncCompleted_ = false;
-			configTzTime(TZ, SNTP_SERVER);
+			configTzTime(getenv("TZ"), SNTP_SERVER);
 
 			elapsedMillis syncElapsed;
 			while (syncElapsed < SYNC_CLOCK_TIMEOUT)
@@ -211,11 +214,6 @@ void setup()
 				Serial.println("Synced.");
 				NextSyncTime_ = time(nullptr) + SNTP_UPDATE_DELAY;
 			}
-		}
-		else
-		{
-			setenv("TZ", TZ, 1);
-			tzset();
 		}
 
 		const time_t now = time(nullptr);
