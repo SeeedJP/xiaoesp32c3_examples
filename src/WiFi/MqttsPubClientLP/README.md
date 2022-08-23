@@ -50,7 +50,7 @@ sequenceDiagram
     participant ESP
 
     note right of main: Start Wi-Fi
-    main->>WiFi: mode(WIFI_STA)
+    main->>WiFi: enableSTA(true)
     main->>WiFi: begin()
 
     note right of main: Wait to connect to Wi-Fi
@@ -62,17 +62,15 @@ sequenceDiagram
     main->>TIME: configTime()
     TIME-->>main: Sync completed
 
-    note right of main: Create JSON string
-    main->>StaticJsonDocument: Create JSON string
-    StaticJsonDocument-->>main: JSON string
-
     note right of main: Publish to MQTT server
     main->>PubSubClient: connect()
+    main->>StaticJsonDocument: Create JSON string
+    StaticJsonDocument-->>main: JSON string
     main->>PubSubClient: publish()
     main->>PubSubClient: disconnect()
 
     note right of main: Stop Wi-Fi
-    main->>WiFi: mode(WIFI_MODE_NULL)
+    main->>WiFi: enableSTA(false)
 
     note right of main: Transition to deep sleep
     main->>ESP: esp_sleep_enable_timer_wakeup()

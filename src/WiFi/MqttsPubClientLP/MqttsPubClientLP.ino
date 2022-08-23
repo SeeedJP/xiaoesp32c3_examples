@@ -60,14 +60,14 @@ static constexpr uint16_t MQTT_SERVER_PORT = 8883;
 ////////////////////////////////////////////////////////////////////////////////
 // Variables
 
-static RTC_DATA_ATTR time_t StartTime_ = 0;
-static RTC_DATA_ATTR time_t NextSyncTime_ = 0;
+static RTC_DATA_ATTR time_t StartTime = 0;
+static RTC_DATA_ATTR time_t NextSyncTime = 0;
 
-static WiFiClientSecure TcpClient_;
-static PubSubClient MqttClient_(TcpClient_);
+static WiFiClientSecure TcpClient;
+static PubSubClient MqttClient(TcpClient);
 
-static unsigned long ExecutionTime_ = 0;
-static StaticJsonDocument<32> JsonDoc_;	// https://arduinojson.org/v6/assistant
+static unsigned long ExecutionTime = 0;
+static StaticJsonDocument<32> JsonDoc;	// https://arduinojson.org/v6/assistant
 
 ////////////////////////////////////////////////////////////////////////////////
 // Certificates
@@ -134,16 +134,16 @@ void setup()
 	// Configure
 
 	Serial.println("TCP: Configure.");
-	TcpClient_.setCACert(MOSQUITTO_ORG_CA_CERT);
+	TcpClient.setCACert(MOSQUITTO_ORG_CA_CERT);
 
 	Serial.println("MQTT: Configure.");
-	MqttClient_.setServer(MQTT_SERVER, MQTT_SERVER_PORT);
+	MqttClient.setServer(MQTT_SERVER, MQTT_SERVER_PORT);
 
 	////////////////////////////////////////
 	// Start Wi-Fi
 
 	Serial.println("WIFI: Start.");
-	WiFi.mode(WIFI_STA);
+	WiFi.enableSTA(true);
 	if (WIFI_SSID[0] != '\0')
 	{
 		WiFi.begin(WIFI_SSID, WIFI_PASSPHRASE);
@@ -183,7 +183,7 @@ void setup()
 		////////////////////////////////////////
 		// Sync clock with SNTP server
 
-		bool synced = NextSyncTime_ != 0 && time(nullptr) < NextSyncTime_;
+		bool synced = NextSyncTime != 0 && time(nullptr) < NextSyncTime;
 		if (!synced)
 		{
 			Serial.print("SNTP: Syncing clock...");
@@ -212,43 +212,38 @@ void setup()
 			else
 			{
 				Serial.println("Synced.");
-				NextSyncTime_ = time(nullptr) + SNTP_UPDATE_DELAY;
+				NextSyncTime = time(nullptr) + SNTP_UPDATE_DELAY;
 			}
 		}
 
 		const time_t now = time(nullptr);
 		struct tm nowTm;
 		localtime_r(&now, &nowTm);
-		char nowStr[26];
-		asctime_r(&nowTm, nowStr);
+		char nowStr[20];
+		strftime(nowStr, sizeof(nowStr), "%Y/%m/%d %H:%M:%S", &nowTm);
 		Serial.println(nowStr);
 
-		if (NextSyncTime_ != 0)
+		if (NextSyncTime != 0)
 		{
 			////////////////////////////////////////
 			// Remember start time
 
-			if (StartTime_ == 0)
+			if (StartTime == 0)
 			{
-				StartTime_ = time(nullptr);
+				StartTime = time(nullptr);
 			}
 
 			////////////////////////////////////////
-			// Create JSON string
+			// Capture telemetry data
 
-			JsonDoc_.clear();
-			JsonDoc_["uptime"] = time(nullptr) - StartTime_;
-			JsonDoc_["rssi"] = WiFi.RSSI();
-			String payload;
-			serializeJson(JsonDoc_, payload);
-			Serial.print("Payload=");
-			Serial.println(payload);
+			const time_t uptime = time(nullptr) - StartTime;
+			const int8_t rssi = WiFi.RSSI();
 
 			////////////////////////////////////////
 			// Publish to MQTT server
 
 			Serial.print("MQTT: Connect...");
-			if (!MqttClient_.connect(DEVICE_NAME))
+			if (!MqttClient.connect(DEVICE_NAME))
 			{
 				Serial.println("ERROR.");
 			}
@@ -267,10 +262,18 @@ void setup()
 				topic += "/";
 				topic += "uptime";
 
-				MqttClient_.publish(topic.c_str(), payload.c_str());
+				JsonDoc.clear();
+				JsonDoc["uptime"] = uptime;
+				JsonDoc["rssi"] = rssi;
+				String payload;
+				serializeJson(JsonDoc, payload);
+				Serial.print("Payload=");
+				Serial.println(payload);
+
+				MqttClient.publish(topic.c_str(), payload.c_str());
 
 				Serial.println("MQTT: Disconnect.");
-				MqttClient_.disconnect();
+				MqttClient.disconnect();
 			}
 		}
 	}
@@ -279,14 +282,14 @@ void setup()
 	// Stop Wi-Fi
 
 	Serial.println("WIFI: Stop.");
-	WiFi.mode(WIFI_MODE_NULL);
+	WiFi.enableSTA(false);
 
 	////////////////////////////////////////
 	// Transition to deep sleep
 
 	Serial.println("Transition to deep sleep.");
 //	delay(1000);
-	const int sleepSec = StartTime_ == 0 ? 0 : INTERVAL - (time(nullptr) - StartTime_) % INTERVAL;
+	const int sleepSec = StartTime == 0 ? 0 : INTERVAL - (time(nullptr) - StartTime) % INTERVAL;
 	esp_sleep_enable_timer_wakeup(sleepSec * 1000 * 1000);
 	esp_deep_sleep_start();
 }
