@@ -81,3 +81,5 @@ bool TimeManagerClass::waitForSynced(int syncedCount, unsigned long timeout, con
 
     return false;
 }
+
+TimeManagerClass TimeManager;

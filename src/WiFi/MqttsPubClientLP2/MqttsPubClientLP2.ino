@@ -54,9 +54,6 @@ static constexpr unsigned long SYNC_CLOCK_TIMEOUT = 30000;					// [msec.]
 static const char MQTT_SERVER[] = "test.mosquitto.org";
 static constexpr uint16_t MQTT_SERVER_PORT = 8883;
 
-static WiFiStationClass WiFiStation;
-static TimeManagerClass TimeManager;
-
 ////////////////////////////////////////////////////////////////////////////////
 // Variables
 

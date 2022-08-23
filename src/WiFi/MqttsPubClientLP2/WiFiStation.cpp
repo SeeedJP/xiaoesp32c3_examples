@@ -59,3 +59,5 @@ int8_t WiFiStationClass::RSSI() const
 {
     return WiFi.RSSI();
 }
+
+WiFiStationClass WiFiStation;

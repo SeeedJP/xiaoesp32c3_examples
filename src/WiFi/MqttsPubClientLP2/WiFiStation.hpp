@@ -23,3 +23,5 @@ public:
     int8_t RSSI() const;
 
 };
+
+extern WiFiStationClass WiFiStation;

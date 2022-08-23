@@ -25,3 +25,5 @@ private:
     bool waitForSynced(int syncCount, unsigned long timeout = 0, const std::function<void(unsigned long)>& reportProgress = nullptr) const;
 
 };
+
+extern TimeManagerClass TimeManager;
