@@ -60,13 +60,13 @@ static TimeManagerClass TimeManager;
 ////////////////////////////////////////////////////////////////////////////////
 // Variables
 
-static RTC_DATA_ATTR time_t StartTime_ = 0;
+static RTC_DATA_ATTR time_t StartTime = 0;
 
-static WiFiClientSecure TcpClient_;
-static PubSubClient MqttClient_(TcpClient_);
+static WiFiClientSecure TcpClient;
+static PubSubClient MqttClient(TcpClient);
 
-static unsigned long ExecutionTime_ = 0;
-static StaticJsonDocument<32> JsonDoc_;	// https://arduinojson.org/v6/assistant
+static unsigned long ExecutionTime = 0;
+static StaticJsonDocument<32> JsonDoc;	// https://arduinojson.org/v6/assistant
 
 ////////////////////////////////////////////////////////////////////////////////
 // Certificates
@@ -135,10 +135,10 @@ void setup()
 	// Configure
 
 	Serial.println("TCP: Configure.");
-	TcpClient_.setCACert(MOSQUITTO_ORG_CA_CERT);
+	TcpClient.setCACert(MOSQUITTO_ORG_CA_CERT);
 
 	Serial.println("MQTT: Configure.");
-	MqttClient_.setServer(MQTT_SERVER, MQTT_SERVER_PORT);
+	MqttClient.setServer(MQTT_SERVER, MQTT_SERVER_PORT);
 
 	////////////////////////////////////////
 	// Start Wi-Fi
@@ -189,22 +189,22 @@ void setup()
 			////////////////////////////////////////
 			// Remember start time
 
-			if (StartTime_ == 0)
+			if (StartTime == 0)
 			{
-				StartTime_ = time(nullptr);
+				StartTime = time(nullptr);
 			}
 
 			////////////////////////////////////////
 			// Capture telemetry data
 
-			const time_t uptime = time(nullptr) - StartTime_;
+			const time_t uptime = time(nullptr) - StartTime;
 			const int8_t rssi = WiFiStation.RSSI();
 
 			////////////////////////////////////////
 			// Publish to MQTT server
 
 			Serial.print("MQTT: Connect...");
-			if (!MqttClient_.connect(DEVICE_NAME))
+			if (!MqttClient.connect(DEVICE_NAME))
 			{
 				Serial.println("ERROR.");
 			}
@@ -223,18 +223,18 @@ void setup()
 				topic += "/";
 				topic += "uptime";
 
-				JsonDoc_.clear();
-				JsonDoc_["uptime"] = uptime;
-				JsonDoc_["rssi"] = rssi;
+				JsonDoc.clear();
+				JsonDoc["uptime"] = uptime;
+				JsonDoc["rssi"] = rssi;
 				String payload;
-				serializeJson(JsonDoc_, payload);
+				serializeJson(JsonDoc, payload);
 				Serial.print("Payload=");
 				Serial.println(payload);
 
-				MqttClient_.publish(topic.c_str(), payload.c_str());
+				MqttClient.publish(topic.c_str(), payload.c_str());
 
 				Serial.println("MQTT: Disconnect.");
-				MqttClient_.disconnect();
+				MqttClient.disconnect();
 			}
 		}
 	}
@@ -250,7 +250,7 @@ void setup()
 
 	Serial.println("Transition to deep sleep.");
 //	delay(1000);
-	const int sleepSec = StartTime_ == 0 ? 0 : INTERVAL - (time(nullptr) - StartTime_) % INTERVAL;
+	const int sleepSec = StartTime == 0 ? 0 : INTERVAL - (time(nullptr) - StartTime) % INTERVAL;
 	esp_sleep_enable_timer_wakeup(sleepSec * 1000 * 1000);
 	esp_deep_sleep_start();
 }
