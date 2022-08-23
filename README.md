@@ -10,3 +10,4 @@
 | :--- | :--- | :--- |
 | [PingClient](src/WiFi/PingClient) | src/WiFi | 一定時間間隔にサーバー[www.google.com](https://www.google.com/)にPingしてネットワークの開通状況を確認します。 |
 | [MqttsPubClientLP](src/WiFi/MqttsPubClientLP) | src/WiFi | 一定時間間隔にMQTTサーバー[test.mosquitto.org](https://test.mosquitto.org/)にJSONメッセージをパブリッシュ（送信）します。 |
+| [MqttsPubClientLP2](src/WiFi/MqttsPubClientLP2) | src/WiFi | 一定時間間隔にMQTTサーバー[test.mosquitto.org](https://test.mosquitto.org/)にJSONメッセージをパブリッシュ（送信）します。MqttsPubClientLPを、独自クラスを使用して改善したものです。 |
