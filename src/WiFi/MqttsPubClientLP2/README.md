@@ -58,12 +58,10 @@ sequenceDiagram
     note right of main: Sync clock with SNTP server
     main->>TimeManager: syncStartAndWaitForSynced()
 
-    note right of main: Create JSON string
-    main->>StaticJsonDocument: Create JSON string
-    StaticJsonDocument-->>main: JSON string
-
     note right of main: Publish to MQTT server
     main->>PubSubClient: connect()
+    main->>StaticJsonDocument: Create JSON string
+    StaticJsonDocument-->>main: JSON string
     main->>PubSubClient: publish()
     main->>PubSubClient: disconnect()
 

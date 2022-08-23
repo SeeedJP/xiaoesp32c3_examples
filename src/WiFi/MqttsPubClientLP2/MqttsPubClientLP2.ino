@@ -104,6 +104,22 @@ static const char MOSQUITTO_ORG_CA_CERT[] = \
 	"-----END CERTIFICATE-----\n";
 
 ////////////////////////////////////////////////////////////////////////////////
+// Functions
+
+static String CurrentTime()
+{
+		const time_t now = time(nullptr);
+
+		struct tm nowTm;
+		localtime_r(&now, &nowTm);
+
+		char nowStr[20];
+		strftime(nowStr, sizeof(nowStr), "%Y/%m/%d %H:%M:%S", &nowTm);
+
+		return nowStr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // setup and loop
 
 void setup()
@@ -166,12 +182,7 @@ void setup()
 			}
 		}
 
-		const time_t now = time(nullptr);
-		struct tm nowTm;
-		localtime_r(&now, &nowTm);
-		char nowStr[26];
-		asctime_r(&nowTm, nowStr);
-		Serial.println(nowStr);
+		Serial.println(CurrentTime());
 
 		if (TimeManager.isTimeValid())
 		{
@@ -184,15 +195,10 @@ void setup()
 			}
 
 			////////////////////////////////////////
-			// Create JSON string
+			// Capture telemetry data
 
-			JsonDoc_.clear();
-			JsonDoc_["uptime"] = time(nullptr) - StartTime_;
-			JsonDoc_["rssi"] = WiFiStation.RSSI();
-			String payload;
-			serializeJson(JsonDoc_, payload);
-			Serial.print("Payload=");
-			Serial.println(payload);
+			const time_t uptime = time(nullptr) - StartTime_;
+			const int8_t rssi = WiFiStation.RSSI();
 
 			////////////////////////////////////////
 			// Publish to MQTT server
@@ -216,6 +222,14 @@ void setup()
 				topic += DEVICE_NAME;
 				topic += "/";
 				topic += "uptime";
+
+				JsonDoc_.clear();
+				JsonDoc_["uptime"] = uptime;
+				JsonDoc_["rssi"] = rssi;
+				String payload;
+				serializeJson(JsonDoc_, payload);
+				Serial.print("Payload=");
+				Serial.println(payload);
 
 				MqttClient_.publish(topic.c_str(), payload.c_str());
 
