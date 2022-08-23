@@ -55,7 +55,7 @@ sequenceDiagram
 
     note right of main: Wait to connect to Wi-Fi
     loop != WL_CONNECTED
-        main->>WiFi: WiFi.status()
+        main->>WiFi: status()
     end
 
     note right of main: Sync clock with SNTP server
