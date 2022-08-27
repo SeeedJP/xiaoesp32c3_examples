@@ -39,7 +39,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Constants
 
-static const char APPLICATION_NAME[] = "mqtts-pub-client";
+static const char APPLICATION_NAME[] = "mqtts-pub-client-lp";
 static const char GROUP_NAME[] = "test";
 static const char DEVICE_NAME[] = "xiao1234";
 
@@ -52,7 +52,7 @@ static constexpr uint32_t WIFI_CONNECT_TIMEOUT = 30000;							// [msec.]
 
 static const char TZ[] = "JST-9";
 static const char SNTP_SERVER[] = "pool.ntp.org";
-static constexpr unsigned long SYNC_CLOCK_TIMEOUT = 30000;					// [msec.]
+static constexpr unsigned long TIME_SYNC_TIMEOUT = 30000;						// [msec.]
 
 static const char MQTT_SERVER[] = "test.mosquitto.org";
 static constexpr uint16_t MQTT_SERVER_PORT = 8883;
@@ -66,7 +66,6 @@ static RTC_DATA_ATTR time_t NextSyncTime = 0;
 static WiFiClientSecure TcpClient;
 static PubSubClient MqttClient(TcpClient);
 
-static unsigned long ExecutionTime = 0;
 static StaticJsonDocument<32> JsonDoc;	// https://arduinojson.org/v6/assistant
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -192,7 +191,7 @@ void setup()
 			configTzTime(getenv("TZ"), SNTP_SERVER);
 
 			elapsedMillis syncElapsed;
-			while (syncElapsed < SYNC_CLOCK_TIMEOUT)
+			while (syncElapsed < TIME_SYNC_TIMEOUT)
 			{
 				if (!TimeSyncCompleted_)
 				{
@@ -253,14 +252,7 @@ void setup()
 
 				Serial.println("MQTT: Publish.");
 
-				String topic = "dt/";
-				topic += APPLICATION_NAME;
-				topic += "/";
-				topic += GROUP_NAME;
-				topic += "/";
-				topic += DEVICE_NAME;
-				topic += "/";
-				topic += "uptime";
+				String topic = String("dt/") + APPLICATION_NAME + "/" + GROUP_NAME + "/" + DEVICE_NAME + "/uptime";
 
 				JsonDoc.clear();
 				JsonDoc["uptime"] = uptime;
