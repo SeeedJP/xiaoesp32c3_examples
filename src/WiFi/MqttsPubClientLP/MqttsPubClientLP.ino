@@ -21,7 +21,7 @@
 //   Partition Scheme: Default 4MB with spiffs(1.2MB APP/1.5MB SPIFFS)
 //   Core Debug Level: None
 // Libraries:
-//   PubSubClient 2.8.0 - https://github.com/knolleary/pubsubclient
+//   MQTT 2.5.0 - https://github.com/256dpi/arduino-mqtt
 //   ArduinoJson 6.19.4 - https://github.com/bblanchon/ArduinoJson
 //   elapsedMillis 1.0.6 - https://github.com/pfeerick/elapsedMillis
 
@@ -32,7 +32,7 @@
 #include <esp_sntp.h>
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
-#include <PubSubClient.h>
+#include <MQTT.h>
 #include <ArduinoJson.h>
 #include <elapsedMillis.h>
 
@@ -64,7 +64,7 @@ static RTC_DATA_ATTR time_t StartTime = 0;
 static RTC_DATA_ATTR time_t NextSyncTime = 0;
 
 static WiFiClientSecure TcpClient;
-static PubSubClient MqttClient(TcpClient);
+static MQTTClient MqttClient;
 
 static StaticJsonDocument<32> JsonDoc;	// https://arduinojson.org/v6/assistant
 
@@ -136,7 +136,7 @@ void setup()
 	TcpClient.setCACert(MOSQUITTO_ORG_CA_CERT);
 
 	Serial.println("MQTT: Configure.");
-	MqttClient.setServer(MQTT_SERVER, MQTT_SERVER_PORT);
+	MqttClient.begin(MQTT_SERVER, MQTT_SERVER_PORT, TcpClient);
 
 	////////////////////////////////////////
 	// Start Wi-Fi
@@ -262,7 +262,7 @@ void setup()
 				Serial.print("Payload=");
 				Serial.println(payload);
 
-				MqttClient.publish(topic.c_str(), payload.c_str());
+				MqttClient.publish(topic, payload, false, LWMQTT_QOS0);
 
 				Serial.println("MQTT: Disconnect.");
 				MqttClient.disconnect();

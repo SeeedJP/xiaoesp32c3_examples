@@ -34,7 +34,7 @@ flowchart LR
 ## MQTTメッセージのモニタリング
 
 ```
-$ mosquitto_sub -h test.mosquitto.org -t "dt/mqtts-pub-client/test/#" -v
+$ mosquitto_sub -h test.mosquitto.org -t "dt/mqtts-pub-client/test/#" -v -q 2
 ```
 
 ## シーケンス
@@ -44,7 +44,7 @@ $ mosquitto_sub -h test.mosquitto.org -t "dt/mqtts-pub-client/test/#" -v
 sequenceDiagram
     participant main
     participant WiFi
-    participant PubSubClient
+    participant MQTTClient
     participant StaticJsonDocument
     participant TIME
     participant ESP
@@ -63,11 +63,11 @@ sequenceDiagram
     TIME-->>main: Sync completed
 
     note right of main: Publish to MQTT server
-    main->>PubSubClient: connect()
+    main->>MQTTClient: connect()
     main->>StaticJsonDocument: Create JSON string
     StaticJsonDocument-->>main: JSON string
-    main->>PubSubClient: publish()
-    main->>PubSubClient: disconnect()
+    main->>MQTTClient: publish()
+    main->>MQTTClient: disconnect()
 
     note right of main: Stop Wi-Fi
     main->>WiFi: enableSTA(false)
@@ -81,9 +81,9 @@ sequenceDiagram
 
 | 処理 | 電気量[mC] | 電流[mA] | 時間[msec.] |
 | :--- | ---: | ---: | ---: |
-| MQTT通信 1回目（SNTPあり） | 269.46 | 37.66 | 7154 |
-| MQTT通信 2回目（SNTPなし） | 148.97 | 39.36 | 3785 |
-| ディープスリープ | 7.27 | 0.13 | 56770 |
+| MQTT通信 1回目（SNTPあり） | 234.45 | 36.26 | 6465 |
+| MQTT通信 2回目（SNTPなし） | 141.25 | 45.46 | 3107 |
+| ディープスリープ | 7.26 | 0.13 | 56710 |
 
 **全体（MQTT通信を2回）:**  
 <img src="media/1.png" width="600">
