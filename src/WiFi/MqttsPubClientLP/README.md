@@ -34,7 +34,7 @@ flowchart LR
 ## MQTTメッセージのモニタリング
 
 ```
-$ mosquitto_sub -h test.mosquitto.org -t "dt/mqtts-pub-client/test/#" -v -q 2
+$ mosquitto_sub -h test.mosquitto.org -t "dt/mqtts-pub-client-lp/test/#" -v -q 2
 ```
 
 ## シーケンス
