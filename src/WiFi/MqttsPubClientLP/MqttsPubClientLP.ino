@@ -106,13 +106,13 @@ static const char MOSQUITTO_ORG_CA_CERT[] = \
 ////////////////////////////////////////////////////////////////////////////////
 // TimeSyncNotificationCallback
 
-static std::atomic_bool TimeSyncCompleted_;
+static std::atomic_bool TimeSyncCompleted;
 
 static void TimeSyncNotificationCallback(struct timeval* tv)
 {
 	if (sntp_get_sync_status() == SNTP_SYNC_STATUS_COMPLETED)
 	{
-		TimeSyncCompleted_ = true;
+		TimeSyncCompleted = true;
 	}
 }
 
@@ -163,7 +163,6 @@ void setup()
 		if (WiFi.status() != WL_CONNECTED)
 		{
 			delay(SPIN_WAIT);
-			yield();
 		}
 		else
 		{
@@ -187,16 +186,15 @@ void setup()
 		{
 			Serial.print("SNTP: Syncing clock...");
 			sntp_set_time_sync_notification_cb(TimeSyncNotificationCallback);
-			TimeSyncCompleted_ = false;
+			TimeSyncCompleted = false;
 			configTzTime(getenv("TZ"), SNTP_SERVER);
 
 			elapsedMillis syncElapsed;
 			while (syncElapsed < TIME_SYNC_TIMEOUT)
 			{
-				if (!TimeSyncCompleted_)
+				if (!TimeSyncCompleted)
 				{
 					delay(SPIN_WAIT);
-					yield();
 				}
 				else
 				{

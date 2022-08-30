@@ -45,36 +45,36 @@ sequenceDiagram
     participant main
     participant WiFi
     participant MQTTClient
-    participant StaticJsonDocument
-    participant TIME
-    participant ESP
+    participant JsonDocument
+    participant Arduino
 
-    note right of main: Start Wi-Fi
+    note left of main: Start Wi-Fi
     main->>WiFi: enableSTA(true)
     main->>WiFi: begin()
 
-    note right of main: Wait to connect to Wi-Fi
+    note left of main: Wait to connect to Wi-Fi
     loop != WL_CONNECTED
         main->>WiFi: status()
     end
 
-    note right of main: Sync clock with SNTP server
-    main->>TIME: configTime()
-    TIME-->>main: Sync completed
+    note left of main: Sync clock with SNTP server
+    main->>Arduino: configTzTime()
+    loop == false
+      Arduino-->>main: TimeSyncCompleted = true
+    end
 
-    note right of main: Publish to MQTT server
+    note left of main: Publish to MQTT server
     main->>MQTTClient: connect()
-    main->>StaticJsonDocument: Create JSON string
-    StaticJsonDocument-->>main: JSON string
+    main->>JsonDocument: Create JSON string
     main->>MQTTClient: publish()
     main->>MQTTClient: disconnect()
 
-    note right of main: Stop Wi-Fi
+    note left of main: Stop Wi-Fi
     main->>WiFi: enableSTA(false)
 
-    note right of main: Transition to deep sleep
-    main->>ESP: esp_sleep_enable_timer_wakeup()
-    main->>ESP: esp_deep_sleep_start()
+    note left of main: Transition to deep sleep
+    main->>Arduino: esp_sleep_enable_timer_wakeup()
+    main->>Arduino: esp_deep_sleep_start()
 ```
 
 ## 消費電流
