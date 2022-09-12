@@ -95,7 +95,7 @@ sequenceDiagram
 **2回目通信時（SNTP時刻同期なし）:**  
 <img src="media/3.png" width="600">
 
-**ディープスリープ時:**  
+**delay時:**  
 <img src="media/4.png" width="600">
 
 ## ライセンス
