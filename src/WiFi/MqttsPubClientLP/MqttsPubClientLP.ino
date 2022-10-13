@@ -6,20 +6,21 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 // IDE:
-//   Arduino 1.8.19
+//   Arduino 2.0.0
 // Platform:
-//   esp32 2.0.4 - https://github.com/espressif/arduino-esp32
+//   esp32 2.0.5 - https://github.com/espressif/arduino-esp32
 // Board:
 //   XIAO_ESP32C3
 // Board Settings:
-//   Upload Speed: 921600
 //   USB CDC On Boot: Enabled
 //   CPU Frequency: 160MHz(WiFi)
+//   Core Debug Level: None
+//   Erase All Flash Before Sketch Upload: Disabled
 //   Flash Frequency: 80MHz
 //   Flash Mode: QIO
 //   Flash Size: 4MB(32Mb)
 //   Partition Scheme: Default 4MB with spiffs(1.2MB APP/1.5MB SPIFFS)
-//   Core Debug Level: None
+//   Upload Speed: 921600
 // Libraries:
 //   MQTT 2.5.0 - https://github.com/256dpi/arduino-mqtt
 //   ArduinoJson 6.19.4 - https://github.com/bblanchon/ArduinoJson
@@ -38,6 +39,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constants
+
+#define MUTUAL_AUTHENTICATION	(0)																		// Enable mutual authentication
 
 static const char APPLICATION_NAME[] = "mqtts-pub-client-lp";
 static const char GROUP_NAME[] = "test";
@@ -77,7 +80,7 @@ static StaticJsonDocument<32> JsonDoc;	// https://arduinojson.org/v6/assistant
 // Organizational Unit: CA
 // From Date: 2020-06-09 20:06:39
 // To Date: 2030-06-07 20:06:39
-static const char MOSQUITTO_ORG_CA_CERT[] = \
+static const char SERVER_CA_CERT[] = \
 	"-----BEGIN CERTIFICATE-----\n" \
 	"MIIEAzCCAuugAwIBAgIUBY1hlCGvdj4NhBXkZ/uLUZNILAwwDQYJKoZIhvcNAQEL\n" \
 	"BQAwgZAxCzAJBgNVBAYTAkdCMRcwFQYDVQQIDA5Vbml0ZWQgS2luZ2RvbTEOMAwG\n" \
@@ -102,6 +105,18 @@ static const char MOSQUITTO_ORG_CA_CERT[] = \
 	"LdUdRudafMu5T5Xma182OC0/u/xRlEm+tvKGGmfFcN0piqVl8OrSPBgIlb+1IKJE\n" \
 	"m/XriWr/Cq4h/JfB7NTsezVslgkBaoU=\n" \
 	"-----END CERTIFICATE-----\n";
+
+#if MUTUAL_AUTHENTICATION != 0
+
+static const char CLIENT_CERT[] = \
+	"-----BEGIN CERTIFICATE-----\n" \
+	"-----END CERTIFICATE-----\n";
+
+static const char CLIENT_KEY[] = \
+	"-----BEGIN RSA PRIVATE KEY-----\n" \
+	"-----END RSA PRIVATE KEY-----\n";
+
+#endif // MUTUAL_AUTHENTICATION
 
 ////////////////////////////////////////////////////////////////////////////////
 // TimeSyncNotificationCallback
@@ -133,7 +148,11 @@ void setup()
 	// Configure
 
 	Serial.println("TCP: Configure.");
-	TcpClient.setCACert(MOSQUITTO_ORG_CA_CERT);
+	TcpClient.setCACert(SERVER_CA_CERT);
+#if MUTUAL_AUTHENTICATION != 0
+	TcpClient.setCertificate(CLIENT_CERT);
+	TcpClient.setPrivateKey(CLIENT_KEY);
+#endif // MUTUAL_AUTHENTICATION
 
 	Serial.println("MQTT: Configure.");
 	MqttClient.begin(MQTT_SERVER, MQTT_SERVER_PORT, TcpClient);
