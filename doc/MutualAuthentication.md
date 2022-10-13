@@ -2,7 +2,7 @@
 
 # 相互認証
 
-MqttsPubClientは相互認証に変更することができます。
+MqttsPubClientとMqttsPubClientLPは相互認証に変更することができます。
 
 ## コードの変更
 
