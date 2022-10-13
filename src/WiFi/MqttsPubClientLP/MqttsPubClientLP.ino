@@ -59,6 +59,7 @@ static constexpr unsigned long TIME_SYNC_TIMEOUT = 30000;						// [msec.]
 
 static const char MQTT_SERVER[] = "test.mosquitto.org";
 static constexpr uint16_t MQTT_SERVER_PORT = 8883;
+static const lwmqtt_qos_t QOS = LWMQTT_QOS0;												// MQTT Quality of Service {LWMQTT_QOS0, LWMQTT_QOS1, LWMQTT_QOS2}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Variables
@@ -279,7 +280,7 @@ void setup()
 				Serial.print("Payload=");
 				Serial.println(payload);
 
-				MqttClient.publish(topic, payload, false, LWMQTT_QOS0);
+				MqttClient.publish(topic, payload, false, QOS);
 
 				Serial.println("MQTT: Disconnect.");
 				MqttClient.disconnect();
