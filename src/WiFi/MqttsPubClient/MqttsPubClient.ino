@@ -30,6 +30,7 @@
 
 #include <atomic>
 #include <esp_sntp.h>
+#include <esp_wifi.h>
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <MQTT.h>
@@ -40,6 +41,7 @@
 
 #define MUTUAL_AUTHENTICATION	(0)																		// Enable mutual authentication
 // #define WIFI_TX_POWER					(WIFI_POWER_2dBm)											// Wi-Fi maximum transmitting power (wifi_power_t)
+// #define WIFI_PROTOCOL					(WIFI_PROTOCOL_11N)										// Wi-Fi protocol {WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N | WIFI_PROTOCOL_LR}
 
 static const char APPLICATION_NAME[] = "mqtts-pub-client";
 static const char GROUP_NAME[] = "test";
@@ -160,6 +162,9 @@ void setup()
 
 	Serial.println("WIFI: Start.");
 	WiFi.enableSTA(true);
+#if defined(WIFI_PROTOCOL)
+  esp_wifi_set_protocol(WIFI_IF_STA, WIFI_PROTOCOL);
+#endif // WIFI_PROTOCOL
 #if defined(WIFI_TX_POWER)
   WiFi.setTxPower(WIFI_TX_POWER);
 #endif // WIFI_TX_POWER
