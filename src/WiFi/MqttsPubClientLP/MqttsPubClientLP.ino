@@ -41,6 +41,7 @@
 // Constants
 
 #define MUTUAL_AUTHENTICATION	(0)																		// Enable mutual authentication
+// #define WIFI_TX_POWER					(WIFI_POWER_2dBm)											// Wi-Fi maximum transmitting power (wifi_power_t)
 
 static const char APPLICATION_NAME[] = "mqtts-pub-client-lp";
 static const char GROUP_NAME[] = "test";
@@ -59,7 +60,7 @@ static constexpr unsigned long TIME_SYNC_TIMEOUT = 30000;						// [msec.]
 
 static const char MQTT_SERVER[] = "test.mosquitto.org";
 static constexpr uint16_t MQTT_SERVER_PORT = 8883;
-static const lwmqtt_qos_t QOS = LWMQTT_QOS0;												// MQTT Quality of Service {LWMQTT_QOS0, LWMQTT_QOS1, LWMQTT_QOS2}
+static constexpr lwmqtt_qos_t QOS = LWMQTT_QOS0;										// MQTT Quality of Service {LWMQTT_QOS0, LWMQTT_QOS1, LWMQTT_QOS2}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Variables
@@ -163,6 +164,9 @@ void setup()
 
 	Serial.println("WIFI: Start.");
 	WiFi.enableSTA(true);
+#if defined(WIFI_TX_POWER)
+  WiFi.setTxPower(WIFI_TX_POWER);
+#endif // WIFI_TX_POWER
 	if (WIFI_SSID[0] != '\0')
 	{
 		WiFi.begin(WIFI_SSID, WIFI_PASSPHRASE);
