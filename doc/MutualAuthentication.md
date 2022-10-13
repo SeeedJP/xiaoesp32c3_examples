@@ -1,24 +1,16 @@
 [Japanese]
 
-# MqttsMutualPubClient
+# 相互認証
 
-MqttsMutualPubClientは、一定時間間隔にMQTTサーバー[test.mosquitto.org](https://test.mosquitto.org/)にJSONメッセージをパブリッシュ（送信）するサンプルコードです。
-
-```mermaid
-flowchart LR
-    id1[XIAO ESP32C3]-- JSON message -->id2[MQTT Server]
-```
+MqttsPubClientは相互認証に変更することができます。
 
 ## コードの変更
 
-MqttsPubClientのTcpClientにクライアント証明書とクライアントプライベートキーを設定します。
+1. `MUTUAL_AUTHENTICATION`を`(1)`に変更します。
+2. `CLIENT_CERT`にクライアント証明書を設定します。
+3. `CLIENT_KEY`にクライアント秘密鍵を設定します。
 
-```cpp
-	Serial.println("TCP: Configure.");
-	TcpClient.setCACert(CA_CERT);
-	TcpClient.setCertificate(CLIENT_CERT);
-	TcpClient.setPrivateKey(CLIENT_PRIVKEY);
-```
+また、接続するサーバーに応じて、`MQTT_SERVER`と`MQTT_SERVER_PORT`、`SERVER_CA_CERT`を変更してください。
 
 ## MQTTメッセージのモニタリング
 
@@ -72,7 +64,3 @@ EOL
 
 sudo systemctl enable mosquitto && sudo systemctl start mosquitto
 ```
-
-## ライセンス
-
-[MIT](LICENSE.txt)

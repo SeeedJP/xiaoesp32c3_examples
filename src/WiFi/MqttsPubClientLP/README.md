@@ -21,6 +21,7 @@ flowchart LR
 | `WIFI_PASSPHRASE` | 接続するWi-Fiアクセスポイントのパスフレーズです。 |
 | `MQTT_SERVER` | MQTTサーバー名です。 |
 | `MQTT_SERVER_PORT` | MQTTサーバーに接続するポート番号です。 |
+| `QOS` | MQTTに送信するときのQoS(Quality of Service)です。LWMQTT_QOS0, LWMQTT_QOS1, LWMQTT_QOS2のいずれかを指定します。 |
 
 ## トピック名とペイロード
 
@@ -86,16 +87,20 @@ sequenceDiagram
 | ディープスリープ | 7.26 | 0.13 | 56710 |
 
 **全体（MQTT通信を2回）:**  
-<img src="media/1.png" width="600">
+<img src="../../../media/5.png" width="600">
 
 **初回通信時（SNTP時刻同期あり）:**  
-<img src="media/2.png" width="600">
+<img src="../../../media/6.png" width="600">
 
 **2回目通信時（SNTP時刻同期なし）:**  
-<img src="media/3.png" width="600">
+<img src="../../../media/7.png" width="600">
 
 **ディープスリープ時:**  
-<img src="media/4.png" width="600">
+<img src="../../../media/8.png" width="600">
+
+## 認証を相互認証に変更
+
+[MutualAuthentication](/doc/MutualAuthentication.md)
 
 ## ライセンス
 
