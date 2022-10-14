@@ -15,7 +15,7 @@ MqttsPubClientとMqttsPubClientLPは相互認証に変更することができ�
 ## MQTTメッセージのモニタリング
 
 ```
-$ mosquitto_sub -h <hostname> -p 8884 --capath . --cafile ca.crt  --cert client.crt --key client.key -t "dt/mqtts-pub-client/test/#" -v -q 2
+$ mosquitto_sub -h <hostname> -p 8884 --capath . --cafile ca.crt --cert client.crt --key client.key -t "dt/mqtts-pub-client/test/#" -v -q 2
 ```
 
 ## MQTTサーバーのセットアップ
