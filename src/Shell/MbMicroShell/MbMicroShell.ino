@@ -6,7 +6,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 // IDE:
-//   Arduino 2.2.1
+//   Arduino 2.3.0
 // Platform:
 //   esp32 2.0.14 - https://github.com/espressif/arduino-esp32
 // Board:
